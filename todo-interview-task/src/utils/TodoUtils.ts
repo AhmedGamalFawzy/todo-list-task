@@ -1,6 +1,3 @@
-// Violating DRY and SOLID principles - utility functions that should be better organized
-
-// Duplicate interface definition (already in App.tsx)
 interface Todo {
   id: number;
   text: string;
@@ -11,9 +8,7 @@ interface Todo {
   updatedAt: Date;
 }
 
-// Violating SRP - this class does too many things
 export class TodoUtilityManager {
-  // Violating DRY - duplicate validation (already in App.tsx)
   public validateTodoText(text: string): boolean {
     if (text.trim().length === 0) {
       return false;
@@ -27,7 +22,6 @@ export class TodoUtilityManager {
     return true;
   }
 
-  // Violating KISS - overly complex date formatting
   public formatDate(date: Date): string {
     const now = new Date();
     const diffInMs = now.getTime() - date.getTime();
@@ -84,7 +78,6 @@ export class TodoUtilityManager {
     }
   }
 
-  // Violating YAGNI - unnecessary complex sorting
   public sortTodos(todos: Todo[], sortBy: string): Todo[] {
     const sorted = [...todos];
 
@@ -98,7 +91,6 @@ export class TodoUtilityManager {
           return bPriority - aPriority;
         }
 
-        // Secondary sort by creation date
         return b.createdAt.getTime() - a.createdAt.getTime();
       });
     } else if (sortBy === "createdAt") {
@@ -110,7 +102,6 @@ export class TodoUtilityManager {
           return bTime - aTime;
         }
 
-        // Secondary sort by priority
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
       });
@@ -122,7 +113,6 @@ export class TodoUtilityManager {
         if (aText < bText) return -1;
         if (aText > bText) return 1;
 
-        // Secondary sort by creation date
         return b.createdAt.getTime() - a.createdAt.getTime();
       });
     } else if (sortBy === "completion") {
@@ -130,7 +120,6 @@ export class TodoUtilityManager {
         if (a.completed && !b.completed) return 1;
         if (!a.completed && b.completed) return -1;
 
-        // Secondary sort by priority
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
       });
@@ -139,7 +128,6 @@ export class TodoUtilityManager {
     return sorted;
   }
 
-  // Violating DRY - duplicate filtering logic
   public filterTodos(
     todos: Todo[],
     filter: string,
@@ -147,7 +135,6 @@ export class TodoUtilityManager {
   ): Todo[] {
     let filtered = [...todos];
 
-    // Search filtering (duplicate logic)
     if (searchTerm.trim() !== "") {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter((todo) => {
@@ -158,7 +145,6 @@ export class TodoUtilityManager {
       });
     }
 
-    // Status filtering (duplicate logic)
     if (filter === "active") {
       filtered = filtered.filter((todo) => !todo.completed);
     } else if (filter === "completed") {
@@ -174,32 +160,26 @@ export class TodoUtilityManager {
     return filtered;
   }
 
-  // Violating KISS - overly complex ID generation
   public generateTodoId(existingTodos: Todo[]): number {
     if (existingTodos.length === 0) {
       return 1;
     }
 
-    // Get all existing IDs
     const existingIds = existingTodos
       .map((todo) => todo.id)
       .sort((a, b) => a - b);
 
-    // Find the maximum ID
     const maxId = Math.max(...existingIds);
 
-    // Check for gaps in the sequence
     for (let i = 1; i <= maxId; i++) {
       if (!existingIds.includes(i)) {
         return i;
       }
     }
 
-    // If no gaps, return next ID
     return maxId + 1;
   }
 
-  // Violating YAGNI - unnecessary statistics calculation
   public calculateDetailedStatistics(todos: Todo[]) {
     const total = todos.length;
     const completed = todos.filter((t) => t.completed).length;
@@ -208,7 +188,6 @@ export class TodoUtilityManager {
     const mediumPriority = todos.filter((t) => t.priority === "medium").length;
     const lowPriority = todos.filter((t) => t.priority === "low").length;
 
-    // Calculate completion rate by priority
     const highPriorityCompleted = todos.filter(
       (t) => t.priority === "high" && t.completed
     ).length;
@@ -226,7 +205,6 @@ export class TodoUtilityManager {
     const lowPriorityCompletionRate =
       lowPriority > 0 ? (lowPriorityCompleted / lowPriority) * 100 : 0;
 
-    // Calculate average completion time (unnecessary complexity)
     const completedTodos = todos.filter((t) => t.completed);
     let averageCompletionTime = 0;
     if (completedTodos.length > 0) {
@@ -236,7 +214,6 @@ export class TodoUtilityManager {
       averageCompletionTime = totalCompletionTime / completedTodos.length;
     }
 
-    // Calculate categories statistics
     const categoriesMap = new Map<
       string,
       { total: number; completed: number }
@@ -293,7 +270,6 @@ export class TodoUtilityManager {
     };
   }
 
-  // More unnecessary complexity
   private formatDuration(milliseconds: number): string {
     const seconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -312,10 +288,8 @@ export class TodoUtilityManager {
   }
 }
 
-// Violating SOLID - global singleton pattern (anti-pattern)
 export const todoUtilityManager = new TodoUtilityManager();
 
-// Violating DRY - more duplicate validation functions
 export function validateTodoTextLength(text: string): boolean {
   return text.trim().length > 0 && text.length <= 100;
 }
@@ -328,7 +302,6 @@ export function validateTodoTextComplete(text: string): boolean {
   return validateTodoTextLength(text) && validateTodoTextContent(text);
 }
 
-// Violating YAGNI - unnecessary export functions
 export function getTodosByPriority(
   todos: Todo[],
   priority: "low" | "medium" | "high"
@@ -355,7 +328,6 @@ export function getCompletedTodos(todos: Todo[]): Todo[] {
   return getTodosByCompletion(todos, true);
 }
 
-// Violating KISS - overly complex helper functions
 export function isHighPriorityAndActive(todo: Todo): boolean {
   return todo.priority === "high" && !todo.completed;
 }

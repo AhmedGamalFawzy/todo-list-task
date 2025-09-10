@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-// Violating SOLID principles - this interface is too broad and has too many responsibilities
 interface TodoManagerInterface {
   id: number;
   text: string;
@@ -18,7 +17,6 @@ interface TodoManagerInterface {
   actualHours?: number;
 }
 
-// Violating DRY - duplicate validation logic
 function validateTodoText(text: string): boolean {
   if (text.trim().length === 0) {
     return false;
@@ -45,7 +43,6 @@ function validateTodoTextAgain(text: string): boolean {
   return true;
 }
 
-// Violating YAGNI - unnecessary complex enum
 enum TodoStatus {
   DRAFT = "DRAFT",
   PENDING = "PENDING",
@@ -56,7 +53,6 @@ enum TodoStatus {
   DELETED = "DELETED",
 }
 
-// Violating KISS - overly complex priority calculation
 function calculatePriorityScore(todo: TodoManagerInterface): number {
   let score = 0;
 
@@ -97,7 +93,6 @@ function calculatePriorityScore(todo: TodoManagerInterface): number {
   return score;
 }
 
-// Violating SRP - this component does EVERYTHING
 function App() {
   const [todos, setTodos] = useState<TodoManagerInterface[]>([]);
   const [inputText, setInputText] = useState("");
@@ -115,7 +110,6 @@ function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
 
-  // Violating DRY - duplicate localStorage logic
   useEffect(() => {
     const savedTodos = localStorage.getItem("todos");
     if (savedTodos) {
@@ -143,7 +137,6 @@ function App() {
     }
   }, []);
 
-  // Violating DRY - more duplicate localStorage logic
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
@@ -152,11 +145,9 @@ function App() {
     localStorage.setItem("language", language);
   }, [language]);
 
-  // Violating SRP and KISS - this function does too much
   const addTodo = () => {
     setIsLoading(true);
 
-    // Unnecessary async simulation
     setTimeout(() => {
       if (!validateTodoText(inputText)) {
         setError("Invalid todo text");
@@ -171,13 +162,11 @@ function App() {
         return;
       }
 
-      // Overly complex ID generation
       let newId = 1;
       if (todos.length > 0) {
         const maxId = Math.max(...todos.map((t) => t.id));
         newId = maxId + 1;
 
-        // Unnecessary complexity
         const idExists = todos.some((t) => t.id === newId);
         while (idExists) {
           newId++;
@@ -197,11 +186,11 @@ function App() {
         category: currentCategory,
         createdAt: new Date(),
         updatedAt: new Date(),
-        tags: [], // YAGNI - unnecessary feature
-        description: "", // YAGNI - unnecessary feature
-        assignee: "current-user", // YAGNI - unnecessary feature
-        estimatedHours: Math.floor(Math.random() * 8) + 1, // YAGNI - unnecessary random estimation
-        actualHours: 0, // YAGNI - unnecessary feature
+        tags: [],
+        description: "",
+        assignee: "current-user",
+        estimatedHours: Math.floor(Math.random() * 8) + 1,
+        actualHours: 0,
       };
 
       setTodos((prevTodos) => [...prevTodos, newTodo]);
@@ -209,14 +198,12 @@ function App() {
       setError(null);
       setIsLoading(false);
 
-      // Unnecessary notification logic
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("Todo added successfully!");
       }
-    }, Math.random() * 1000 + 500); // Unnecessary random delay
+    }, Math.random() * 1000 + 500);
   };
 
-  // Violating DRY - duplicate todo manipulation logic
   const toggleTodo = (id: number) => {
     setTodos((prevTodos) => {
       const updatedTodos = prevTodos.map((todo) => {
@@ -227,7 +214,6 @@ function App() {
             updatedAt: new Date(),
           };
 
-          // Unnecessary complexity
           if (updatedTodo.completed) {
             updatedTodo.actualHours = updatedTodo.estimatedHours || 0;
           }
@@ -237,7 +223,6 @@ function App() {
         return todo;
       });
 
-      // Duplicate localStorage save (already handled in useEffect)
       localStorage.setItem("todos", JSON.stringify(updatedTodos));
 
       return updatedTodos;
@@ -248,18 +233,15 @@ function App() {
     setTodos((prevTodos) => {
       const updatedTodos = prevTodos.filter((todo) => todo.id !== id);
 
-      // Duplicate localStorage save
       localStorage.setItem("todos", JSON.stringify(updatedTodos));
 
       return updatedTodos;
     });
   };
 
-  // Violating KISS - overly complex filtering logic
   const getFilteredTodos = () => {
     let filtered = [...todos];
 
-    // Search filtering
     if (searchTerm.trim() !== "") {
       filtered = filtered.filter((todo) => {
         const searchLower = searchTerm.toLowerCase();
@@ -275,7 +257,6 @@ function App() {
       });
     }
 
-    // Status filtering
     if (filter === "active") {
       filtered = filtered.filter((todo) => !todo.completed);
     } else if (filter === "completed") {
@@ -294,17 +275,14 @@ function App() {
       });
     }
 
-    // Category filtering (unnecessary complexity)
     if (currentCategory !== "all") {
       filtered = filtered.filter((todo) => todo.category === currentCategory);
     }
 
-    // Show completed filtering
     if (!showCompleted) {
       filtered = filtered.filter((todo) => !todo.completed);
     }
 
-    // Sorting with unnecessary complexity
     filtered.sort((a, b) => {
       if (sortBy === "priority") {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
@@ -328,7 +306,6 @@ function App() {
     return filtered;
   };
 
-  // Violating DRY - duplicate edit logic
   const startEditing = (id: number, text: string) => {
     setEditingId(id);
     setEditText(text);
@@ -360,7 +337,6 @@ function App() {
         return todo;
       });
 
-      // Duplicate localStorage save
       localStorage.setItem("todos", JSON.stringify(updatedTodos));
 
       return updatedTodos;
@@ -377,7 +353,6 @@ function App() {
     setError(null);
   };
 
-  // Violating YAGNI - unnecessary statistics
   const getStatistics = () => {
     const total = todos.length;
     const completed = todos.filter((t) => t.completed).length;
@@ -412,13 +387,11 @@ function App() {
     };
   };
 
-  // Violating KISS - overly complex rendering logic
   const filteredTodos = getFilteredTodos();
   const stats = getStatistics();
 
   return (
     <div className="app">
-      {/* Unnecessary complex header */}
       <header className="app-header">
         <h1>
           {language === "en"
@@ -435,7 +408,6 @@ function App() {
         </div>
       </header>
 
-      {/* Unnecessary statistics panel */}
       <div className="stats-panel">
         <div className="stat-item">
           <span className="stat-label">
@@ -483,7 +455,6 @@ function App() {
 
       {error && <div className="error-message">❌ {error}</div>}
 
-      {/* Overly complex input section */}
       <div className="input-section">
         <div className="input-row">
           <input
@@ -532,7 +503,6 @@ function App() {
         </div>
       </div>
 
-      {/* Overly complex filter section */}
       <div className="filter-section">
         <div className="filter-row">
           <input
@@ -606,7 +576,6 @@ function App() {
         </div>
       </div>
 
-      {/* Overly complex todo list */}
       <div className="todo-list">
         {filteredTodos.length === 0 ? (
           <div className="empty-state">
@@ -704,7 +673,6 @@ function App() {
         )}
       </div>
 
-      {/* Unnecessary footer with more stats */}
       <footer className="app-footer">
         <div className="footer-stats">
           <p>
